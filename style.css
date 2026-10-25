@@ -1,32 +1,155 @@
+/* Sổ tài sản — giao diện dashboard gọn, chuyên nghiệp.
+   Chỉ đổi màu sắc, khoảng cách và bố cục. Logic trong app.js giữ nguyên,
+   mọi id và class mà app.js dùng đều được giữ lại. */
+
 * { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #f4f4f2; color: #1f1f1f; line-height: 1.5; }
-main { max-width: 860px; margin: 0 auto; padding: 24px 16px 48px; }
-header h1 { margin: 0 0 8px; font-size: 28px; }
-header p, .muted { color: #666; }
-.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
-.card { background: #fff; border: 1px solid #e2e2e0; border-radius: 12px; padding: 18px; margin-bottom: 14px; }
-.card.big { grid-column: span 1; }
-.label { display: block; color: #666; font-size: 14px; margin-bottom: 4px; }
-.card strong { font-size: 22px; display: block; }
-h2 { margin-top: 0; font-size: 19px; }
-form { display: grid; gap: 12px; }
-label { display: grid; gap: 6px; font-weight: 600; }
-input[type="text"] { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-small { font-weight: 400; color: #666; }
-.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-button, .button { border: 0; border-radius: 8px; padding: 10px 16px; font-size: 15px; cursor: pointer; background: #1f6feb; color: #fff; }
-button.secondary, .button.secondary { background: #e8e8e6; color: #1f1f1f; }
-button.danger { background: #c0392b; }
-.item-row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid #eee; }
+
+:root {
+  --bg: #eef2f7;
+  --surface: #ffffff;
+  --ink: #0f172a;
+  --ink-soft: #334155;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-soft: #eff6ff;
+  --danger: #dc2626;
+  --radius: 16px;
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+main { max-width: 920px; margin: 0 auto; padding: 28px 20px 48px; }
+
+/* Banner đầu trang */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 58%, #2563eb 100%);
+  color: #fff;
+  border-radius: 20px;
+  padding: 28px 30px;
+  box-shadow: var(--shadow);
+}
+.hero h1 { margin: 0 0 6px; font-size: 30px; letter-spacing: -0.02em; }
+.hero p { margin: 0; color: #cbd5e1; max-width: 560px; }
+.hero-badge {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 3 ô tổng quan */
+.stats { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px; margin: 18px 0; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.stat { margin-bottom: 0; }
+.stat-hero { background: #0f172a; border-color: #0f172a; color: #fff; }
+.stat-hero .label { color: #94a3b8; }
+.stat-hero .muted { color: #cbd5e1; }
+.label { display: block; color: var(--muted); font-size: 13px; font-weight: 600; text-transform: none; margin-bottom: 6px; }
+.stat strong { font-size: 26px; display: block; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.stat-hero strong { font-size: 32px; }
+.muted { color: var(--muted); font-size: 14px; }
+
+.section-head { margin-bottom: 16px; }
+.section-head h2 { margin: 0 0 4px; font-size: 20px; letter-spacing: -0.01em; }
+.section-head p { margin: 0; }
+
+/* Form */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.span2 { grid-column: span 2; }
+.field { display: grid; gap: 7px; font-weight: 600; font-size: 14px; }
+input[type="text"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 16px;
+  background: #fff;
+  color: var(--ink);
+}
+input[type="text"]:focus { outline: 2px solid var(--primary); outline-offset: 1px; border-color: var(--primary); }
+.field small { font-weight: 400; color: var(--muted); font-size: 13px; }
+
+/* Nút */
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+button, .button {
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--primary);
+  color: #fff;
+}
+button:hover, .button:hover { background: var(--primary-dark); }
+button.secondary, .button.secondary { background: #f1f5f9; color: var(--ink); border: 1px solid var(--line); }
+button.secondary:hover, .button.secondary:hover { background: #e2e8f0; }
+button.danger { background: var(--danger); }
+button.danger:hover { background: #b91c1c; }
+
+/* Danh sách khoản */
+.item-row { display: flex; justify-content: space-between; gap: 16px; padding: 14px 8px; border-top: 1px solid var(--line); border-radius: 8px; }
 .item-row:first-child { border-top: 0; }
+.item-row:hover { background: #f8fafc; }
 .item-row b { display: block; }
-.tag { display: inline-block; background: #eef4ff; color: #1f6feb; border-radius: 999px; padding: 2px 10px; font-size: 13px; margin-top: 4px; }
-.item-amount { text-align: right; white-space: nowrap; }
-.mini-btn { background: transparent; color: #1f6feb; padding: 4px 6px; font-size: 14px; }
-.mini-btn.danger-text { color: #c0392b; }
-.bar-row { margin: 10px 0; }
-.bar-track { height: 10px; background: #eee; border-radius: 999px; overflow: hidden; }
-.bar-fill { height: 100%; background: #1f6feb; }
-.bar-head { display: flex; justify-content: space-between; gap: 8px; }
-.empty { color: #666; }
-@media (max-width: 640px) { .cards { grid-template-columns: 1fr; } .item-row { flex-direction: column; } .item-amount { text-align: left; } }
+.tag {
+  display: inline-block;
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  padding: 2px 11px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 5px;
+}
+.item-amount { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.mini-btn { background: transparent; color: var(--primary); padding: 4px 6px; font-size: 14px; }
+.mini-btn:hover { background: transparent; text-decoration: underline; }
+.mini-btn.danger-text { color: var(--danger); }
+
+/* Thanh phân bổ */
+.bar-row { margin: 14px 0; }
+.bar-head { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; margin-bottom: 7px; }
+.bar-head span:last-child { font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+.bar-track { height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, #2563eb, #0ea5e9); border-radius: 999px; }
+
+.empty { color: var(--muted); }
+footer { text-align: center; padding: 8px 0 0; }
+
+@media (max-width: 720px) {
+  main { padding: 18px 14px 36px; }
+  .hero { flex-direction: column; padding: 22px; }
+  .hero h1 { font-size: 26px; }
+  .hero-badge { white-space: normal; }
+  .stats { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .span2 { grid-column: span 1; }
+  .item-row { flex-direction: column; }
+  .item-amount { text-align: left; }
+}

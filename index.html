@@ -8,23 +8,26 @@
 </head>
 <body>
 <main>
-  <header>
-    <h1>Sổ tài sản của tôi</h1>
-    <p>Web tĩnh, không cần đăng nhập. Số liệu chỉ lưu trong trình duyệt của bạn, không nằm trong code hay gửi đi đâu.</p>
+  <header class="hero">
+    <div>
+      <h1>Sổ tài sản của tôi</h1>
+      <p>Tổng quan tiền mặt, tiết kiệm, quỹ, vàng và crypto của bạn, gọn trong một trang.</p>
+    </div>
+    <span class="hero-badge">Riêng tư · Lưu ở máy bạn</span>
   </header>
 
-  <section class="cards">
-    <div class="card big">
+  <section class="stats">
+    <div class="card stat stat-hero">
       <span class="label">Tổng tài sản hiện tại</span>
       <strong id="totalAmount">0 ₫</strong>
       <span class="muted" id="totalMeta">Chưa có khoản nào</span>
     </div>
-    <div class="card">
+    <div class="card stat">
       <span class="label">Số khoản đang theo dõi</span>
       <strong id="itemCount">0</strong>
       <span class="muted">Cập nhật tay khi số tiền thay đổi</span>
     </div>
-    <div class="card">
+    <div class="card stat">
       <span class="label">Danh mục lớn nhất</span>
       <strong id="topCategory">—</strong>
       <span class="muted" id="topCategoryMeta">—</span>
@@ -32,24 +35,27 @@
   </section>
 
   <section class="card">
-    <h2>Thêm / sửa khoản</h2>
-    <form id="itemForm">
-      <label>Tên khoản
+    <div class="section-head">
+      <h2>Thêm / sửa khoản</h2>
+      <p class="muted">Nhập giá trị hiện tại quy đổi ra VND, cập nhật lại khi số tiền hoặc giá thay đổi.</p>
+    </div>
+    <form id="itemForm" class="form-grid">
+      <label class="field span2">Tên khoản
         <input id="itemName" type="text" placeholder="Ví dụ: Tiền mặt trong ví, Sổ tiết kiệm Vietcombank, Quỹ VCBF, Vàng SJC, BTC" required>
       </label>
-      <label>Danh mục
+      <label class="field">Danh mục
         <input id="itemCategory" type="text" list="categoryList" placeholder="Tiền mặt, Tiết kiệm, Quỹ, Vàng, Crypto..." required>
         <datalist id="categoryList"></datalist>
         <small>Gõ danh mục mới là tự thêm được, không cần sửa code.</small>
       </label>
-      <label>Số tiền hiện tại (VND)
+      <label class="field">Số tiền hiện tại (VND)
         <input id="itemAmount" type="text" inputmode="numeric" placeholder="Ví dụ: 50000000" required>
-        <small>Nhập giá trị quy đổi ra VND ở thời điểm hiện tại. Với vàng hay crypto, bạn tự cập nhật lại khi giá đổi.</small>
+        <small>Với vàng hay crypto, bạn tự cập nhật lại khi giá đổi.</small>
       </label>
-      <label>Ghi chú (không bắt buộc)
+      <label class="field span2">Ghi chú (không bắt buộc)
         <input id="itemNote" type="text" placeholder="Ví dụ: đáo hạn tháng 6, để riêng không đụng tới">
       </label>
-      <div class="actions">
+      <div class="actions span2">
         <button type="submit" id="submitBtn">Lưu khoản</button>
         <button type="button" id="cancelEditBtn" class="secondary" hidden>Hủy sửa</button>
       </div>
@@ -57,18 +63,26 @@
   </section>
 
   <section class="card">
-    <h2>Phân bổ theo danh mục</h2>
+    <div class="section-head">
+      <h2>Phân bổ theo danh mục</h2>
+      <p class="muted">Tiền của bạn đang nằm ở đâu nhiều nhất, nhìn một cái là thấy.</p>
+    </div>
     <div id="breakdown"></div>
   </section>
 
   <section class="card">
-    <h2>Các khoản hiện tại</h2>
+    <div class="section-head">
+      <h2>Các khoản hiện tại</h2>
+      <p class="muted">Sắp xếp theo số tiền từ lớn đến nhỏ.</p>
+    </div>
     <div id="itemList"></div>
   </section>
 
   <section class="card">
-    <h2>Lịch sử chốt số liệu</h2>
-    <p class="muted">Mỗi lần bấm “Chốt thời điểm hiện tại”, app lưu lại tổng tài sản lúc đó để bạn xem mình tăng hay giảm theo thời gian. Không cần nhập mỗi ngày, chốt theo tuần hoặc theo tháng là đủ.</p>
+    <div class="section-head">
+      <h2>Lịch sử chốt số liệu</h2>
+      <p class="muted">Không cần nhập mỗi ngày, chốt theo tuần hoặc theo tháng là đủ để thấy tài sản tăng hay giảm.</p>
+    </div>
     <div class="actions">
       <button type="button" id="snapshotBtn">Chốt thời điểm hiện tại</button>
     </div>
@@ -76,8 +90,10 @@
   </section>
 
   <section class="card">
-    <h2>Dữ liệu của bạn</h2>
-    <p class="muted">Xuất file JSON để backup hoặc chuyển sang máy khác, rồi dùng nút Nhập file để khôi phục. File này chứa số tiền thật của bạn, nên chỉ giữ ở máy mình, đừng commit lên repo public.</p>
+    <div class="section-head">
+      <h2>Dữ liệu của bạn</h2>
+      <p class="muted">Xuất file JSON để backup hoặc chuyển sang máy khác, rồi dùng nút Nhập file để khôi phục. File này chứa số tiền thật của bạn, nên chỉ giữ ở máy mình, đừng commit lên repo public.</p>
+    </div>
     <div class="actions">
       <button type="button" id="exportBtn">Xuất file JSON</button>
       <label class="button secondary" for="importFile">Nhập file JSON</label>
@@ -86,6 +102,8 @@
     </div>
     <p class="muted" id="statusMsg"></p>
   </section>
+
+  <footer class="muted">Web tĩnh, không cần đăng nhập. Số liệu chỉ lưu trong trình duyệt của bạn, không nằm trong code hay gửi đi đâu.</footer>
 </main>
 <script src="app.js"></script>
 </body>
