@@ -52,7 +52,13 @@ function loadState() {
   }
 }
 
+// Lưu thay đổi do người dùng tạo ra; nếu đang bật đồng bộ thì sync.js sẽ đẩy lên Gist.
 function saveState() {
+  writeState();
+  markLocalChange();
+}
+
+function writeState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
@@ -529,17 +535,25 @@ function toast(message, { type = "info", action, onAction } = {}) {
   }
 }
 
-function confirmAction({ title, message, confirmText = "Đồng ý", danger = false }) {
+async function confirmAction(options) {
+  return (await chooseAction(options)) === "ok";
+}
+
+// Trả về "ok", "alt" (khi có altText) hoặc "" nếu người dùng hủy / bấm Esc.
+function chooseAction({ title, message, confirmText = "Đồng ý", altText = "", danger = false }) {
   const dlg = $("confirmDialog");
   $("confirmTitle").textContent = title;
   $("confirmMessage").textContent = message;
   const ok = $("confirmOk");
   ok.textContent = confirmText;
   ok.className = "btn " + (danger ? "btn-danger" : "btn-primary");
+  const alt = $("confirmAlt");
+  alt.textContent = altText;
+  alt.hidden = !altText;
   dlg.returnValue = "";
   dlg.showModal();
   return new Promise((resolve) => {
-    dlg.addEventListener("close", () => resolve(dlg.returnValue === "ok"), { once: true });
+    dlg.addEventListener("close", () => resolve(dlg.returnValue === "cancel" ? "" : dlg.returnValue), { once: true });
   });
 }
 
@@ -793,11 +807,14 @@ $("importFile").addEventListener("change", (e) => {
 $("clearBtn").addEventListener("click", async () => {
   const ok = await confirmAction({
     title: "Xóa hết dữ liệu?",
-    message: "Toàn bộ khoản và lịch sử chốt trên máy này sẽ bị xóa, không thể hoàn tác. Hãy xuất file backup trước nếu cần giữ lại.",
+    message: "Toàn bộ khoản và lịch sử chốt trên máy này sẽ bị xóa, không thể hoàn tác. Hãy xuất file backup trước nếu cần giữ lại." +
+      (syncConnected() ? "\n\nĐồng bộ trên máy này cũng sẽ được ngắt, dữ liệu trên Gist vẫn giữ nguyên." : ""),
     confirmText: "Xóa hết",
     danger: true,
   });
   if (!ok) return;
+  // Ngắt đồng bộ trước để việc xóa trên máy này không lan sang Gist.
+  if (syncConnected()) disconnectSync();
   state = { items: [], snapshots: [] };
   saveState();
   renderAll();
@@ -818,3 +835,4 @@ window.addEventListener("scroll", () => { $("chartTip").hidden = true; }, { pass
 
 applyTheme();
 applyRoute();
+initSync();

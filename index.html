@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 <script>
   // Áp giao diện sáng/tối trước khi trang hiện ra để không bị nháy màu.
   try {
@@ -39,6 +39,7 @@
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
     <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18.5a4.5 4.5 0 0 1-.7-8.95 6 6 0 0 1 11.5 1.2A4 4 0 0 1 17 18.5z"/></symbol>
     <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
   </defs>
 </svg>
@@ -57,7 +58,7 @@
     </nav>
     <div class="side-foot">
       <svg class="icon"><use href="#i-lock"/></svg>
-      <span>Dữ liệu chỉ lưu trong trình duyệt này</span>
+      <span id="sideFootText">Dữ liệu chỉ lưu trong trình duyệt này</span>
     </div>
   </aside>
 
@@ -68,6 +69,7 @@
         <p id="pageSubtitle" class="muted">Bức tranh tài sản của bạn hôm nay</p>
       </div>
       <div class="topbar-actions">
+        <a href="#/cai-dat" class="icon-btn sync-indicator" id="syncIndicator" hidden><svg class="icon"><use href="#i-cloud"/></svg></a>
         <button type="button" class="icon-btn" id="privacyBtn" aria-pressed="false" title="Ẩn/hiện số tiền">
           <svg class="icon"><use href="#i-eye"/></svg>
         </button>
@@ -215,6 +217,60 @@
         <p class="muted small" id="backupMeta"></p>
       </div>
 
+      <div class="card">
+        <div class="card-head">
+          <h2>Đồng bộ qua GitHub Gist</h2>
+          <span class="sync-badge" id="syncBadge"></span>
+        </div>
+        <div id="syncSetup">
+          <p class="muted small">Dùng chung dữ liệu giữa nhiều máy. Dữ liệu được mã hóa ngay trên máy bằng mật khẩu đồng bộ rồi mới gửi lên một gist bí mật trong tài khoản GitHub của bạn, nên lộ token hay link gist cũng chỉ thấy chuỗi mã hóa.</p>
+          <ol class="steps">
+            <li>Tạo <a class="link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained token</a>: đặt <b>Expiration</b> 90 ngày, ở <b>Permissions → Account permissions</b> chọn <b>Gists: Read and write</b>, không cần quyền repository nào.</li>
+            <li>Dán token và đặt mật khẩu đồng bộ bên dưới. Trên máy khác, nhập token (cùng tài khoản GitHub) và <b>đúng mật khẩu này</b>, app sẽ tự tìm gist đã có.</li>
+          </ol>
+          <form id="syncForm" class="sync-form" novalidate>
+            <label class="field">
+              <span>Token GitHub</span>
+              <input id="syncToken" type="password" placeholder="github_pat_…" autocomplete="off" spellcheck="false">
+            </label>
+            <label class="field">
+              <span>Mật khẩu đồng bộ</span>
+              <input id="syncPass" type="password" placeholder="Ít nhất 8 ký tự" autocomplete="new-password">
+            </label>
+            <label class="field">
+              <span>Nhập lại mật khẩu</span>
+              <input id="syncPass2" type="password" autocomplete="new-password">
+            </label>
+            <p class="form-error" id="syncError" role="alert" hidden></p>
+            <div class="actions">
+              <button type="submit" class="btn btn-primary" id="syncConnectBtn">Kết nối</button>
+            </div>
+          </form>
+          <p class="muted small">Máy chỉ lưu token và khóa mã hóa, không lưu mật khẩu. Quên mật khẩu thì không giải mã được dữ liệu trên Gist, nhưng dữ liệu trên máy và file backup vẫn còn.</p>
+        </div>
+        <div id="syncConnected" hidden>
+          <div class="setting-row">
+            <div><b id="syncStatusText"></b><p class="muted small" id="syncStatusMeta"></p></div>
+            <button type="button" class="btn btn-secondary" id="syncNowBtn"><svg class="icon"><use href="#i-cloud"/></svg>Đồng bộ ngay</button>
+          </div>
+          <details class="sync-more">
+            <summary>Đổi token (khi token cũ hết hạn hoặc bị thu hồi)</summary>
+            <form id="syncTokenForm" class="sync-token-form">
+              <label class="field">
+                <span>Token mới</span>
+                <input id="syncNewToken" type="password" placeholder="github_pat_…" autocomplete="off" spellcheck="false">
+              </label>
+              <button type="submit" class="btn btn-secondary">Lưu token</button>
+            </form>
+          </details>
+          <div class="actions">
+            <a class="link" id="syncGistLink" href="https://gist.github.com/" target="_blank" rel="noopener">Xem gist <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+            <span class="spacer"></span>
+            <button type="button" class="btn btn-ghost-danger" id="syncDisconnectBtn">Ngắt đồng bộ trên máy này</button>
+          </div>
+        </div>
+      </div>
+
       <div class="card danger-zone">
         <div class="card-head"><h2>Vùng nguy hiểm</h2></div>
         <div class="setting-row">
@@ -284,6 +340,7 @@
     <footer class="sheet-foot">
       <span class="spacer"></span>
       <button value="cancel" class="btn btn-secondary">Hủy</button>
+      <button value="alt" class="btn btn-secondary" id="confirmAlt" hidden></button>
       <button value="ok" class="btn btn-primary" id="confirmOk">Đồng ý</button>
     </footer>
   </form>
@@ -292,6 +349,7 @@
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="chart-tip" id="chartTip" hidden></div>
 
-<script src="app.js?v=4"></script>
+<script src="sync.js?v=5"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>

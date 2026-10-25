@@ -21,9 +21,30 @@ Tool web nhỏ để theo dõi tổng tiền hiện tại và các khoản đầ
 - Nút con mắt ở góc trên che toàn bộ số tiền khi bạn mở app ở nơi đông người.
 - Vào Cài đặt → “Xuất file JSON” để backup hoặc chuyển sang máy khác, rồi dùng “Nhập file JSON” để khôi phục.
 
+## Đồng bộ giữa nhiều máy (GitHub Gist, có mã hóa)
+
+Không bắt buộc. Bật trong Cài đặt → “Đồng bộ qua GitHub Gist”:
+
+1. Tạo [fine-grained token](https://github.com/settings/personal-access-tokens/new):
+   Expiration 90 ngày, Permissions → Account permissions → **Gists: Read and write**, không cần quyền repository nào.
+2. Dán token, đặt mật khẩu đồng bộ (ít nhất 8 ký tự) rồi bấm Kết nối.
+   Máy đầu tiên sẽ tạo một gist bí mật tên `so-tai-san.enc.json`.
+3. Trên máy khác, nhập token của cùng tài khoản GitHub và **đúng mật khẩu đó**, app tự tìm gist đã có.
+
+Cách hoạt động:
+
+- Dữ liệu được mã hóa ngay trên trình duyệt (AES-GCM 256-bit, khóa sinh từ mật khẩu bằng PBKDF2-SHA256 600.000 vòng) rồi mới gửi lên Gist.
+  Lộ token hay link gist cũng chỉ thấy chuỗi mã hóa.
+- Máy chỉ lưu token và khóa đã sinh, không lưu mật khẩu. Token không nằm trong file backup JSON.
+- Mỗi lần sửa, app tự đẩy lên sau khoảng 1,5 giây; khi mở lại tab hoặc có mạng lại thì tự kéo bản mới về.
+- Nếu cả máy này và Gist cùng thay đổi, app hỏi bạn giữ bản nào chứ không tự ghi đè.
+- “Xóa hết dữ liệu” sẽ ngắt đồng bộ trước, nên không xóa trắng dữ liệu trên Gist.
+- Token hết hạn hoặc bị thu hồi: vào Cài đặt → “Đổi token”. Nghi lộ token thì thu hồi ngay ở GitHub → Settings → Developer settings.
+- Quên mật khẩu đồng bộ thì không giải mã được dữ liệu trên Gist; dữ liệu trên máy và file backup vẫn còn.
+
 ## Dữ liệu lưu ở đâu?
 
-Chỉ lưu trong trình duyệt của bạn (localStorage), không gửi lên server nào.
+Lưu trong trình duyệt của bạn (localStorage). Nếu bật đồng bộ thì có thêm một bản đã mã hóa trên Gist của bạn, ngoài ra không gửi đi đâu.
 Vì vậy:
 
 - Đừng commit file backup JSON lên repo public, vì file đó chứa số tiền thật.
@@ -32,7 +53,7 @@ Vì vậy:
 
 ## Đưa lên GitHub Pages
 
-1. Tạo repo mới trên GitHub, upload 3 file `index.html`, `style.css`, `app.js` lên nhánh chính.
+1. Tạo repo mới trên GitHub, upload 4 file `index.html`, `style.css`, `app.js`, `sync.js` lên nhánh chính.
 2. Vào Settings → Pages → Build and deployment → Deploy from a branch → chọn nhánh chính, thư mục `/ (root)` → Save.
 3. Đợi vài phút rồi mở đường link GitHub Pages mà GitHub cấp.
 
