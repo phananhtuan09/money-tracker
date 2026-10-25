@@ -10,14 +10,15 @@ const DEFAULT_CATEGORIES = ["Tiền mặt", "Tiết kiệm", "Quỹ", "Vàng", "
 // Khoản nào quá số ngày này chưa sửa sẽ được nhắc cập nhật.
 const STALE_DAYS = 30;
 
+// Tông màu đất, hợp với nền giấy kem và vẫn đọc được trên nền tối.
 const CATEGORY_COLORS = {
-  "Tiền mặt": "#10b981",
-  "Tiết kiệm": "#3b82f6",
-  "Quỹ": "#8b5cf6",
-  "Vàng": "#f59e0b",
-  "Crypto": "#f97316",
+  "Tiền mặt": "#5b8a5f",
+  "Tiết kiệm": "#3b6e8f",
+  "Quỹ": "#86609a",
+  "Vàng": "#c4912c",
+  "Crypto": "#c0582c",
 };
-const EXTRA_COLORS = ["#06b6d4", "#ec4899", "#84cc16", "#ef4444", "#14b8a6", "#6366f1", "#a855f7", "#64748b"];
+const EXTRA_COLORS = ["#4f8a83", "#a14e63", "#8a8f3c", "#a0522d", "#5f7fa8", "#8c7351", "#6d9070", "#9b6a8a"];
 
 const ROUTES = {
   "tong-quan": { title: "Tổng quan", subtitle: "Bức tranh tài sản của bạn hôm nay" },
@@ -356,6 +357,7 @@ function renderDashboard() {
   $("legend").innerHTML = totals.map(([cat, amount]) => `<li>
       <i style="--c:${categoryColor(cat)}"></i>
       <span class="legend-name">${escapeHtml(cat)}</span>
+      <span class="legend-leader"></span>
       <span class="legend-amt">${fmtVnd(amount)}</span>
       <span class="legend-pct">${percent(amount, total)}%</span>
     </li>`).join("");
