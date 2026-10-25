@@ -2,109 +2,296 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3eee3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111814" media="(prefers-color-scheme: dark)">
 <title>Sổ tài sản của tôi</title>
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css?v=4">
+<script>
+  // Áp giao diện sáng/tối trước khi trang hiện ra để không bị nháy màu.
+  try {
+    var t = JSON.parse(localStorage.getItem("money-tracker-prefs") || "{}").theme;
+    if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+  } catch (e) {}
+</script>
 </head>
 <body>
-<main>
-  <header class="hero">
-    <div>
-      <h1>Sổ tài sản của tôi</h1>
-      <p>Tổng quan tiền mặt, tiết kiệm, quỹ, vàng và crypto của bạn, gọn trong một trang.</p>
-    </div>
-    <span class="hero-badge">Riêng tư · Lưu ở máy bạn</span>
-  </header>
+<!-- Bộ icon dùng chung, gọi bằng <use href="#i-..."> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h12v4"/><path d="M3 7v11a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2z"/><circle cx="16.5" cy="14.5" r="1.2"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-7"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.5 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 20V9M7 14l5-5 5 5M5 4h14"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  </defs>
+</svg>
 
-  <section class="stats">
-    <div class="card stat stat-hero">
-      <span class="label">Tổng tài sản hiện tại</span>
-      <strong id="totalAmount">0 ₫</strong>
-      <span class="muted" id="totalMeta">Chưa có khoản nào</span>
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="#/tong-quan">
+      <span class="brand-mark"><svg class="icon"><use href="#i-wallet"/></svg></span>
+      <span>Sổ tài sản</span>
+    </a>
+    <nav class="side-nav" aria-label="Điều hướng chính">
+      <a href="#/tong-quan" data-route="tong-quan"><svg class="icon"><use href="#i-home"/></svg>Tổng quan</a>
+      <a href="#/tai-san" data-route="tai-san"><svg class="icon"><use href="#i-wallet"/></svg>Tài sản</a>
+      <a href="#/lich-su" data-route="lich-su"><svg class="icon"><use href="#i-chart"/></svg>Lịch sử</a>
+      <a href="#/cai-dat" data-route="cai-dat"><svg class="icon"><use href="#i-settings"/></svg>Cài đặt</a>
+    </nav>
+    <div class="side-foot">
+      <svg class="icon"><use href="#i-lock"/></svg>
+      <span>Dữ liệu chỉ lưu trong trình duyệt này</span>
     </div>
-    <div class="card stat">
-      <span class="label">Số khoản đang theo dõi</span>
-      <strong id="itemCount">0</strong>
-      <span class="muted">Cập nhật tay khi số tiền thay đổi</span>
-    </div>
-    <div class="card stat">
-      <span class="label">Danh mục lớn nhất</span>
-      <strong id="topCategory">—</strong>
-      <span class="muted" id="topCategoryMeta">—</span>
-    </div>
-  </section>
+  </aside>
 
-  <section class="card">
-    <div class="section-head">
-      <h2>Thêm / sửa khoản</h2>
-      <p class="muted">Nhập giá trị hiện tại quy đổi ra VND, cập nhật lại khi số tiền hoặc giá thay đổi.</p>
-    </div>
-    <form id="itemForm" class="form-grid">
-      <label class="field span2">Tên khoản
-        <input id="itemName" type="text" placeholder="Ví dụ: Tiền mặt trong ví, Sổ tiết kiệm Vietcombank, Quỹ VCBF, Vàng SJC, BTC" required>
-      </label>
-      <label class="field">Danh mục
-        <input id="itemCategory" type="text" list="categoryList" placeholder="Tiền mặt, Tiết kiệm, Quỹ, Vàng, Crypto..." required>
-        <datalist id="categoryList"></datalist>
-        <small>Gõ danh mục mới là tự thêm được, không cần sửa code.</small>
-      </label>
-      <label class="field">Số tiền hiện tại (VND)
-        <input id="itemAmount" type="text" inputmode="numeric" placeholder="Ví dụ: 50000000" required>
-        <small>Với vàng hay crypto, bạn tự cập nhật lại khi giá đổi.</small>
-      </label>
-      <label class="field span2">Ghi chú (không bắt buộc)
-        <input id="itemNote" type="text" placeholder="Ví dụ: đáo hạn tháng 6, để riêng không đụng tới">
-      </label>
-      <div class="actions span2">
-        <button type="submit" id="submitBtn">Lưu khoản</button>
-        <button type="button" id="cancelEditBtn" class="secondary" hidden>Hủy sửa</button>
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle">Tổng quan</h1>
+        <p id="pageSubtitle" class="muted">Bức tranh tài sản của bạn hôm nay</p>
       </div>
-    </form>
-  </section>
+      <div class="topbar-actions">
+        <button type="button" class="icon-btn" id="privacyBtn" aria-pressed="false" title="Ẩn/hiện số tiền">
+          <svg class="icon"><use href="#i-eye"/></svg>
+        </button>
+        <button type="button" class="btn btn-primary hide-mobile" data-action="add">
+          <svg class="icon"><use href="#i-plus"/></svg>Thêm khoản
+        </button>
+      </div>
+    </header>
 
-  <section class="card">
-    <div class="section-head">
-      <h2>Phân bổ theo danh mục</h2>
-      <p class="muted">Tiền của bạn đang nằm ở đâu nhiều nhất, nhìn một cái là thấy.</p>
-    </div>
-    <div id="breakdown"></div>
-  </section>
+    <!-- Trang Tổng quan -->
+    <section class="view" data-view="tong-quan">
+      <div id="onboarding" class="card onboarding" hidden>
+        <div class="onboarding-art"><svg class="icon"><use href="#i-wallet"/></svg></div>
+        <h2>Bắt đầu theo dõi tài sản</h2>
+        <p class="muted">Thêm từng khoản bạn đang có: tiền mặt, sổ tiết kiệm, quỹ, vàng, crypto… với giá trị hiện tại quy đổi ra VND.</p>
+        <button type="button" class="btn btn-primary" data-action="add"><svg class="icon"><use href="#i-plus"/></svg>Thêm khoản đầu tiên</button>
+      </div>
 
-  <section class="card">
-    <div class="section-head">
-      <h2>Các khoản hiện tại</h2>
-      <p class="muted">Sắp xếp theo số tiền từ lớn đến nhỏ.</p>
-    </div>
-    <div id="itemList"></div>
-  </section>
+      <div id="dashboard">
+        <div class="hero-card">
+          <div class="hero-main">
+            <span class="hero-label">Tổng tài sản hiện tại</span>
+            <strong class="hero-total" id="totalAmount">0 ₫</strong>
+            <div class="hero-meta">
+              <span id="totalDelta" class="delta-pill" hidden></span>
+              <span id="totalMeta"></span>
+            </div>
+          </div>
+          <div class="hero-actions">
+            <button type="button" class="btn btn-glass" data-action="snapshot"><svg class="icon"><use href="#i-flag"/></svg>Chốt số liệu</button>
+            <button type="button" class="btn btn-white" data-action="add"><svg class="icon"><use href="#i-plus"/></svg>Thêm khoản</button>
+          </div>
+        </div>
 
-  <section class="card">
-    <div class="section-head">
-      <h2>Lịch sử chốt số liệu</h2>
-      <p class="muted">Không cần nhập mỗi ngày, chốt theo tuần hoặc theo tháng là đủ để thấy tài sản tăng hay giảm.</p>
-    </div>
-    <div class="actions">
-      <button type="button" id="snapshotBtn">Chốt thời điểm hiện tại</button>
-    </div>
-    <div id="snapshotList"></div>
-  </section>
+        <div class="stat-grid">
+          <div class="card stat">
+            <span class="stat-icon tone-indigo"><svg class="icon"><use href="#i-wallet"/></svg></span>
+            <div><span class="label">Số khoản</span><strong id="itemCount">0</strong></div>
+          </div>
+          <div class="card stat">
+            <span class="stat-icon tone-emerald"><svg class="icon"><use href="#i-layers"/></svg></span>
+            <div><span class="label">Danh mục lớn nhất</span><strong id="topCategory">—</strong><span class="muted small" id="topCategoryMeta"></span></div>
+          </div>
+          <a class="card stat stat-link" href="#/tai-san" id="staleCard">
+            <span class="stat-icon tone-amber"><svg class="icon"><use href="#i-clock"/></svg></span>
+            <div><span class="label">Cần cập nhật</span><strong id="staleCount">0</strong><span class="muted small">khoản quá 30 ngày chưa sửa</span></div>
+          </a>
+        </div>
 
-  <section class="card">
-    <div class="section-head">
-      <h2>Dữ liệu của bạn</h2>
-      <p class="muted">Xuất file JSON để backup hoặc chuyển sang máy khác, rồi dùng nút Nhập file để khôi phục. File này chứa số tiền thật của bạn, nên chỉ giữ ở máy mình, đừng commit lên repo public.</p>
-    </div>
-    <div class="actions">
-      <button type="button" id="exportBtn">Xuất file JSON</button>
-      <label class="button secondary" for="importFile">Nhập file JSON</label>
-      <input id="importFile" type="file" accept="application/json,.json" hidden>
-      <button type="button" id="clearBtn" class="danger">Xóa hết dữ liệu trên máy này</button>
-    </div>
-    <p class="muted" id="statusMsg"></p>
-  </section>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head">
+              <h2>Phân bổ theo danh mục</h2>
+            </div>
+            <div class="allocation">
+              <div class="donut" id="donut"></div>
+              <ul class="legend" id="legend"></ul>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h2>Xu hướng</h2>
+              <a href="#/lich-su" class="link">Chi tiết <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+            </div>
+            <div class="chart" id="trendChart"></div>
+          </div>
+        </div>
 
-  <footer class="muted">Web tĩnh, không cần đăng nhập. Số liệu chỉ lưu trong trình duyệt của bạn, không nằm trong code hay gửi đi đâu.</footer>
-</main>
-<script src="app.js"></script>
+        <div class="card">
+          <div class="card-head">
+            <h2>Khoản lớn nhất</h2>
+            <a href="#/tai-san" class="link">Xem tất cả <svg class="icon"><use href="#i-arrow-right"/></svg></a>
+          </div>
+          <div class="list" id="topItems"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trang Tài sản -->
+    <section class="view" data-view="tai-san" hidden>
+      <div class="card toolbar">
+        <label class="search">
+          <svg class="icon"><use href="#i-search"/></svg>
+          <input id="searchInput" type="search" placeholder="Tìm theo tên hoặc ghi chú…" autocomplete="off">
+        </label>
+        <select id="sortSelect" aria-label="Sắp xếp">
+          <option value="amount-desc">Số tiền: lớn → nhỏ</option>
+          <option value="amount-asc">Số tiền: nhỏ → lớn</option>
+          <option value="name">Tên A → Z</option>
+          <option value="updated">Cập nhật gần nhất</option>
+          <option value="stale">Lâu chưa cập nhật</option>
+        </select>
+      </div>
+      <div class="chips" id="categoryFilter" role="tablist" aria-label="Lọc theo danh mục"></div>
+      <div class="card">
+        <div class="list" id="itemList"></div>
+        <div class="list-foot" id="itemListFoot"></div>
+      </div>
+    </section>
+
+    <!-- Trang Lịch sử -->
+    <section class="view" data-view="lich-su" hidden>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Tổng tài sản qua các lần chốt</h2>
+            <p class="muted small">Chốt theo tuần hoặc theo tháng là đủ để thấy tài sản tăng hay giảm.</p>
+          </div>
+          <button type="button" class="btn btn-primary" data-action="snapshot"><svg class="icon"><use href="#i-flag"/></svg>Chốt hôm nay</button>
+        </div>
+        <div class="chart chart-lg" id="historyChart"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Các lần chốt</h2></div>
+        <div class="list" id="snapshotList"></div>
+      </div>
+    </section>
+
+    <!-- Trang Cài đặt -->
+    <section class="view" data-view="cai-dat" hidden>
+      <div class="card">
+        <div class="card-head"><h2>Hiển thị</h2></div>
+        <div class="setting-row">
+          <div><b>Giao diện</b><p class="muted small">Theo hệ thống, sáng hoặc tối.</p></div>
+          <div class="segmented" id="themeSwitch" role="radiogroup" aria-label="Giao diện">
+            <button type="button" data-theme-value="auto" role="radio">Tự động</button>
+            <button type="button" data-theme-value="light" role="radio">Sáng</button>
+            <button type="button" data-theme-value="dark" role="radio">Tối</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div><b>Ẩn số tiền</b><p class="muted small">Che số tiền khi mở app ở nơi đông người. Bấm biểu tượng con mắt ở góc trên để bật/tắt nhanh.</p></div>
+          <label class="switch"><input type="checkbox" id="privacyToggle"><span></span></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Sao lưu dữ liệu</h2></div>
+        <p class="muted small">Xuất file JSON để backup hoặc chuyển sang máy khác, rồi nhập lại để khôi phục. File này chứa số tiền thật của bạn, chỉ nên giữ ở máy mình, đừng commit lên repo public.</p>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="exportBtn"><svg class="icon"><use href="#i-download"/></svg>Xuất file JSON</button>
+          <label class="btn btn-secondary" for="importFile"><svg class="icon"><use href="#i-upload"/></svg>Nhập file JSON</label>
+          <input id="importFile" type="file" accept="application/json,.json" hidden>
+        </div>
+        <p class="muted small" id="backupMeta"></p>
+      </div>
+
+      <div class="card danger-zone">
+        <div class="card-head"><h2>Vùng nguy hiểm</h2></div>
+        <div class="setting-row">
+          <div><b>Xóa hết dữ liệu trên máy này</b><p class="muted small">Không thể hoàn tác. Hãy xuất file backup trước nếu cần giữ lại.</p></div>
+          <button type="button" class="btn btn-danger" id="clearBtn"><svg class="icon"><use href="#i-trash"/></svg>Xóa hết</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <nav class="tabbar" aria-label="Điều hướng">
+    <a href="#/tong-quan" data-route="tong-quan"><svg class="icon"><use href="#i-home"/></svg><span>Tổng quan</span></a>
+    <a href="#/tai-san" data-route="tai-san"><svg class="icon"><use href="#i-wallet"/></svg><span>Tài sản</span></a>
+    <button type="button" class="tab-add" data-action="add" aria-label="Thêm khoản"><svg class="icon"><use href="#i-plus"/></svg></button>
+    <a href="#/lich-su" data-route="lich-su"><svg class="icon"><use href="#i-chart"/></svg><span>Lịch sử</span></a>
+    <a href="#/cai-dat" data-route="cai-dat"><svg class="icon"><use href="#i-settings"/></svg><span>Cài đặt</span></a>
+  </nav>
+</div>
+
+<!-- Hộp thoại thêm / sửa khoản -->
+<dialog id="itemDialog" class="sheet">
+  <form id="itemForm" method="dialog" novalidate>
+    <header class="sheet-head">
+      <h2 id="itemDialogTitle">Thêm khoản</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Đóng"><svg class="icon"><use href="#i-x"/></svg></button>
+    </header>
+    <div class="sheet-body">
+      <label class="field">
+        <span>Tên khoản</span>
+        <input id="itemName" type="text" placeholder="Ví dụ: Sổ tiết kiệm Vietcombank" autocomplete="off" required>
+      </label>
+      <label class="field">
+        <span>Số tiền hiện tại</span>
+        <div class="money-input">
+          <input id="itemAmount" type="text" inputmode="decimal" placeholder="50.000.000" autocomplete="off" required>
+          <span>₫</span>
+        </div>
+        <small id="amountPreview" class="hint">Có thể gõ tắt: 500k, 50tr, 1,2ty</small>
+      </label>
+      <div class="field">
+        <span>Danh mục</span>
+        <div class="chips chips-pick" id="categoryPicker"></div>
+        <input id="itemCategory" type="text" placeholder="Hoặc gõ danh mục mới…" autocomplete="off" required>
+      </div>
+      <label class="field">
+        <span>Ghi chú <em>(không bắt buộc)</em></span>
+        <input id="itemNote" type="text" placeholder="Ví dụ: đáo hạn tháng 6" autocomplete="off">
+      </label>
+      <p class="form-error" id="formError" role="alert" hidden></p>
+    </div>
+    <footer class="sheet-foot">
+      <button type="button" class="btn btn-ghost-danger" id="deleteInDialogBtn" hidden><svg class="icon"><use href="#i-trash"/></svg>Xóa</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn btn-secondary" data-close>Hủy</button>
+      <button type="submit" class="btn btn-primary" id="submitBtn">Lưu khoản</button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- Hộp thoại xác nhận dùng chung -->
+<dialog id="confirmDialog" class="sheet sheet-sm">
+  <form method="dialog">
+    <div class="sheet-body">
+      <h2 id="confirmTitle"></h2>
+      <p class="muted" id="confirmMessage"></p>
+    </div>
+    <footer class="sheet-foot">
+      <span class="spacer"></span>
+      <button value="cancel" class="btn btn-secondary">Hủy</button>
+      <button value="ok" class="btn btn-primary" id="confirmOk">Đồng ý</button>
+    </footer>
+  </form>
+</dialog>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="chart-tip" id="chartTip" hidden></div>
+
+<script src="app.js?v=4"></script>
 </body>
 </html>
